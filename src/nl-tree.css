@@ -1,0 +1,42 @@
+.nltree {position: relative; font-size: 14px}
+.nltree ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+}
+.nltree ul li{
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    line-height: 1.5em;
+}
+.nltree > ul ul {margin-left: 0.5em; display: none}
+.nltree > ul ul:after {
+    content: "";
+    position: absolute;
+    left: 0px;
+    width: 1px;
+    top: 0px;
+    height: calc(100% - 0.75em);
+    background: rgba(150, 150, 150, 0.8);
+}
+.nltree > ul ul li {
+    padding-left: 1em;
+    position: relative;
+}
+.nltree > ul ul li:after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 0px;
+    width: 0.8em;
+    height: 1px;
+    background: rgba(150, 150, 150, 0.8);
+}
+.nltree ul li.toggled > ul {
+    display: block;
+}
+.nltree ul li.active > a {
+    background-color: #cccccc;
+}
