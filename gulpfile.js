@@ -10,11 +10,11 @@ var rename = require('gulp-rename');
 var ngmin = require('gulp-ngmin');
 var stripDebug = require('gulp-strip-debug');
 gulp.task('build', function() {
-    return gulp.src('src/*.js')
+    return gulp.src('./nl-tree.js')
         .pipe(ngmin({dynamic: false}))
         .pipe(stripDebug())
         .pipe(uglify({mangle: true}))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('./dist/'))
+        .pipe(gulp.dest('./'))
 });
 
