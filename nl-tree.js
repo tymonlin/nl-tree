@@ -6,7 +6,7 @@
             scope: {
                 data: "=",
                 defaultToggled: "=",
-                selectedRow: "=",
+                selected: "&",
                 dataKey: "@",
                 nameKey: "@"
             },
@@ -16,10 +16,12 @@
                 $scope.select = function (row) {
                     if (row.active) {
                         row.active = false;
+                        $scope.selected({row: undefined});
                         $scope.selectedRow = undefined;
                     } else {
                         if ($scope.selectedRow) $scope.selectedRow.active = false;
                         row.active = true;
+                        $scope.selected({'row': row});
                         $scope.selectedRow = row;
                     }
                 }

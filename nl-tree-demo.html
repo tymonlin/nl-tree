@@ -17,13 +17,16 @@
 </head>
 <body>
 <div ng-app="myApp" ng-controller="TreeDemoCtrl" class="nltree">
-    <nl-tree data="treeData" class="nltree" selected-row="row" max-level="10"></nl-tree>
+    <nl-tree data="treeData" class="nltree" selected="selected(row)" max-level="10"></nl-tree>
     <h4>选中的行</h4>
     {{row}}
 </div>
 <script>
     var app = angular.module('myApp', ["module.newland.tree"]);
     app.controller('TreeDemoCtrl', function($scope) {
+        $scope.selected = function(row) {
+            $scope.row = row;
+        }
         $scope.treeData = [
             {
                 "name": "第1行"
