@@ -13,11 +13,11 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <link href="bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" media="all"/>
     <link href="nl-tree.css" rel="stylesheet" type="text/css" media="all"/>
-    <script src="nl-tree.js?v=1"></script>
+    <script src="nl-tree.js?v=2"></script>
 </head>
 <body>
 <div ng-app="myApp" ng-controller="TreeDemoCtrl" class="nltree">
-    <nl-tree data="treeData" class="nltree" selected="selected(row)" max-level="10"></nl-tree>
+    <nl-tree data="treeData" class="nltree" father-node-check="true" multi-select="true" selected="selected(row)" max-level="10"></nl-tree>
     <h4>选中的行</h4>
     {{row}}
 </div>
