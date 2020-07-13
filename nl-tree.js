@@ -6,6 +6,7 @@
             scope: {
                 data: "=",
                 defaultToggled: "=",
+                selectedRow: "=",
                 selected: "&",
                 dataKey: "@",
                 nameKey: "@"
@@ -24,10 +25,10 @@
                         $scope.selected({'row': row});
                         $scope.selectedRow = row;
                     }
-                }
+                };
                 $scope.changeToggled = function (row) {
                     row.toggled = !row.toggled;
-                }
+                };
                 var d = $scope.defaultToggled;
                 $scope.initRowTOG = function (row) {
                     row.toggled = row.toggled == undefined ? (d == undefined ? $NLTree.defaultToggled : d) : row.toggled;
