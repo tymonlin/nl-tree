@@ -17,16 +17,26 @@
 </head>
 <body>
 <div ng-app="myApp" ng-controller="TreeDemoCtrl" class="nltree">
-    <nl-tree data="treeData" class="nltree" father-node-check="true" multi-select="true" selected="selected(row)" max-level="10"></nl-tree>
-    <h4>选中的行</h4>
+    <h3>单选</h3>
+    <nl-tree data="treeData" class="nltree" selected="selected(row)" max-level="10"></nl-tree>
+    <h4>选中的行:</h4>
     {{row}}
+
+    <hr />
+    <h3>多选</h3>
+    <nl-tree data="treeData2" class="nltree" father-node-check="true" default-toggled="true" multi-select="true" max-level="10"></nl-tree>
+    <h4><button ng-click="getCheckedList()">提取选中的行</button> </h4>
+    {{checkedList}}
 </div>
 <script>
     var app = angular.module('myApp', ["module.newland.tree"]);
-    app.controller('TreeDemoCtrl', function($scope) {
+    app.controller('TreeDemoCtrl', function($scope, $NLTree) {
         $scope.selected = function(row) {
             $scope.row = row;
-        }
+        };
+        $scope.getCheckedList = function () {
+            $scope.checkedList = $NLTree.getCheckedList($scope.treeData2, "data", true);
+        };
         $scope.treeData = [
             {
                 "name": "第1行"
@@ -34,6 +44,31 @@
             {
                 "name": "第2行",
                 "toggled": true,
+                "data": [
+                    {
+                        "name": "第2.1行"
+                    },
+                    {
+                        "name": "第2.2行"
+                    },
+                    {
+                        "name": "第2.3行",
+                        "data": [
+                            {
+                                "name": "第2.3.1行"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        $scope.treeData2 = [
+            {
+                "name": "第1行"
+            },
+            {
+                "name": "第2行",
                 "data": [
                     {
                         "name": "第2.1行"

@@ -11,7 +11,7 @@
                 dataKey: "@",
                 nameKey: "@",
                 fatherNodeCheck: "@",
-                multiSelect: "="
+                multiSelect: "@"
             },
             controller: ["$scope", function ($scope) {
                 if (!$scope.nameKey) $scope.nameKey = 'name';
@@ -102,6 +102,17 @@
         this.maxDepth = 10;
         this.defaultToggled = false;
         this.defaultMultiSelect = false;
+        this.getCheckedList = function (list, dataKey, hasFatherNode) {
+            if (!dataKey) dataKey = "data";
+            var target = [];
+            for (var i = 0; i < list.length; i++) {
+                var row = list[i],sonCheckedList = [];
+                if (row[dataKey]) sonCheckedList = this.getCheckedList(row[dataKey], dataKey, hasFatherNode);
+                if ((!hasFatherNode && !row[dataKey] && row.active) || (hasFatherNode && row.active)) target.push(row);
+                target = target.concat(sonCheckedList);
+            }
+            return target;
+        }
         this.sortDataList = function(list, parentId, keyId, parentIdKey) {
             var targetList = [];
             for (var i = 0; i < list.length; i++) {
