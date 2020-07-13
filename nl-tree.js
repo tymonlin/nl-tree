@@ -55,6 +55,18 @@
     app.provider("$NLTree", function treeProvider() {
         this.maxDepth = 10;
         this.defaultToggled = false;
+        this.sortDataList = function(list, parentId, keyId, parentIdKey) {
+            var targetList = [];
+            for (var i = 0; i < list.length; i++) {
+                var object = list[i];
+                if (object[parentIdKey] == parentId) {
+                    var sonList = this.sortDataList(list, object[keyId], keyId, parentIdKey);
+                    if (sonList.length > 0) object.data = sonList;
+                    targetList.push(object);
+                }
+            }
+            return targetList;
+        };
         this.$get = function () {
             return new treeProvider();
         }
