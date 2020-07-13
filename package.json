@@ -1,6 +1,6 @@
 {
   "name": "nl-tree",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Newland Tree",
   "main": "index.js",
   "scripts": {

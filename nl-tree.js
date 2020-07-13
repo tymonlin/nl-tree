@@ -41,7 +41,7 @@
                 var ul = $("<ul ng-if='" + (i == 0 ? true : ("row" + (i-1) + "[dataKey]")) +"'>" +
                     "   <li ng-repeat='row" + i + " in " + (i == 0 ? "data" : "row" + (i-1) + "[dataKey]") +"' ng-class=\"{'active':(row" + i + ".active), 'toggled': row" + i + ".toggled}\" ng-init='initRowTOG(row" + i + ")'>" +
                     "       <i class='fa' ng-class=\"{'fa-plus-square-o': (row"+i+"[dataKey] && !row"+i+".toggled), 'fa-minus-square-o': (!row"+i+"[dataKey] || row"+i+".toggled)}\" ng-click='changeToggled(row"+i+")'></i>" +
-                    "       <a href='javascript:;' ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'><span>{{row"+i+".name}}</span></a>" +
+                    "       <a href='javascript:;' ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'><span>{{row"+i+"[nameKey]}}</span></a>" +
                     "   </li>" +
                     "</ul>");
                 tar.append(ul);
