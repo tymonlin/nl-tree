@@ -12,15 +12,21 @@
     <script src="https://cdn.staticfile.org/angular.js/1.6.8/angular.min.js"></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <link href="bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" media="all"/>
-    <link href="nl-tree.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="nl-tree.css?v=1" rel="stylesheet" type="text/css" media="all"/>
     <script src="nl-tree.js?v=3"></script>
 </head>
 <body>
 <div ng-app="myApp" ng-controller="TreeDemoCtrl" class="nltree">
-    <h3>单选</h3>
+    <h3>单选 树菜单</h3>
     <nl-tree data="treeData" class="nltree" selected="selected(row)" max-level="10"></nl-tree>
     <h4>选中的行:</h4>
     {{row}}
+
+    <hr />
+    <h3>单选 目录</h3>
+    <nl-tree data="folderData" class="nltree" load-nodes="loadNodes(row)" default-toggled="true" set-config="{{folderTreeConfig}}" selected="selectedFolder(folder)" max-level="50"></nl-tree>
+    <h4>选中的目录:</h4>
+    {{folder}}
 
     <hr />
     <h3>多选</h3>
@@ -35,9 +41,57 @@
         $scope.selected = function(row) {
             $scope.row = row;
         };
+        $scope.selectedFolder = function(folder) {
+            $scope.folder = folder;
+        };
         $scope.getCheckedList = function () {
             $scope.checkedList = $NLTree.getCheckedList($scope.treeData2, "data", true);
         };
+        $scope.loadNodes = function (row) {
+            return [
+                {
+                    "name": row.name + "-1",
+                    "fileType": "file"
+                },
+                {
+                    "name": row.name + "-2",
+                    "fileType": "file"
+                },
+                {
+                    "name": row.name + "-3",
+                    "fileType": "folder"
+                }
+            ]
+        }
+        $scope.folderTreeConfig = {
+            toggledOpenIcon: "fa fa-folder-open-o",
+            toggledCloseIcon: "fa fa-folder-o"
+        };
+        $scope.folderData = [
+            {
+                "name": "第1行"
+            },
+            {
+                "name": "第2行",
+                "data": [
+                    {
+                        "name": "第2.1行"
+                    },
+                    {
+                        "name": "第2.2行"
+                    },
+                    {
+                        "name": "第2.3行",
+                        "data": [
+                            {
+                                "name": "第2.3.1行"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
         $scope.treeData = [
             {
                 "name": "第1行"

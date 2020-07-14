@@ -38,5 +38,6 @@
     display: block;
 }
 .nltree ul li.active > a {
-    background-color: #cccccc;
+    background: rgba(95,158,160, 0.4);
+    /*background-color: #cccccc;*/
 }

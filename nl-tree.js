@@ -8,15 +8,21 @@
                 defaultToggled: "=",
                 selectedRow: "@",
                 selected: "&",
+                loadNodes: "&",
                 dataKey: "@",
                 nameKey: "@",
                 multiSelect: "@",
-                translateKey: "@"
+                translateKey: "@",
+                setConfig: "@"
             },
             controller: ["$scope", function ($scope) {
+                $scope.config = angular.extend({}, $NLTree.defaultConfig);
+                if ($scope.setConfig) {
+                    angular.extend($scope.config, jQuery.parseJSON($scope.setConfig));
+                }
                 if (!$scope.nameKey) $scope.nameKey = 'name';
                 if (!$scope.dataKey) $scope.dataKey = 'data';
-                if (!$scope.multiSelect) $scope.multiSelect = $NLTree.defaultMultiSelect;
+                if (!$scope.multiSelect) $scope.multiSelect = $scope.config.defaultMultiSelect;
                 if (!$scope.fatherNodeCheck) $scope.fatherNodeCheck = false;
                 if ($scope.translateKey && !$injector.has("$translate")) {
                     console.warn("The angular-translate module was not loaded, or the translate-key parameter was cancelled.");
@@ -39,7 +45,6 @@
                     // 2 全选中
                     row.checked = row.checked ? 0 : 2;
                     recursiveChecked(row, row.checked);
-
                     $NLTree.recursiveState($scope.data, $scope.dataKey);
                 };
                 function recursiveChecked(row, state) {
@@ -53,11 +58,19 @@
                     }
                 };
                 $scope.changeToggled = function (row) {
+                    if (!row.toggled && $scope.loadNodes) {
+                        row.data = undefined;
+                        row.data = $scope.loadNodes({"row": row});
+                    }
                     row.toggled = !row.toggled;
                 };
                 var d = $scope.defaultToggled;
                 $scope.initRowTOG = function (row) {
-                    row.toggled = row.toggled == undefined ? (d == undefined ? $NLTree.defaultToggled : d) : row.toggled;
+                    if (row[$scope.dataKey]) {
+                        row.toggled = row.toggled == undefined ? (d == undefined ? $scope.config.defaultToggled : d) : row.toggled;
+                    } else {
+                        row.toggled = false;
+                    }
                 };
             }],
             template: "<div></div>",
@@ -71,8 +84,8 @@
                     "   <li ng-repeat='row" + i + " in " + (i == 0 ? "data" : "row" + (i-1) + "[dataKey]") +"' " +
                     "       ng-class=\"{'active':(row" + i + ".active), 'toggled': row" + i + ".toggled}\" " +
                     "       ng-init='initRowTOG(row" + i + ")'>" +
-                    "       <i class='fa' ng-class=\"{'fa-plus-square-o': (row"+i+"[dataKey] && !row"+i+".toggled), 'fa-minus-square-o': (!row"+i+"[dataKey] || row"+i+".toggled)}\" ng-click='changeToggled(row"+i+")'></i>" +
-                    "       <i class='fa' ng-show='multiSelect' ng-class=\"{'fa-square-o': !row" + i + ".checked, 'fa-check-square-o': row" + i + ".checked==2, 'fa-check-square': row" + i + ".checked==1}\" ng-click='check(row"+i+")'></i>" +
+                    "       <i ng-class=\"{true:config.toggledOpenIcon, false:config.toggledCloseIcon}[row"+i+".toggled == true]\" ng-click='changeToggled(row"+i+")'></i>" +
+                    "       <i ng-show='multiSelect' ng-class=\"{'fa fa-square-o': !row" + i + ".checked, 'fa fa-check-square-o': row" + i + ".checked==2, 'fa fa-check-square': row" + i + ".checked==1}\" ng-click='check(row"+i+")'></i>" +
                     "       <a href='javascript:;' ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'><span>{{translateKey ? (row" + i + "[translateKey] | nlTreeTranslate) : row"+i+"[nameKey]}}</span></a>" +
                     "   </li>" +
                     "</ul>");
@@ -91,9 +104,13 @@
         return fun;
     }]);
     app.provider("$NLTree", function treeProvider() {
+        this.defaultConfig = {
+            toggledOpenIcon: "fa fa-minus-square-o",
+            toggledCloseIcon: "fa fa-plus-square-o",
+            defaultToggled: false,
+            defaultMultiSelect: false
+        };
         this.maxDepth = 10;
-        this.defaultToggled = false;
-        this.defaultMultiSelect = false;
         this.getCheckedList = function (list, dataKey, hasFatherNode) {
             if (!dataKey) dataKey = "data";
             var target = [];
@@ -136,6 +153,6 @@
         };
         this.$get = function () {
             return new treeProvider();
-        }
+        };
     })
 })(angular);
