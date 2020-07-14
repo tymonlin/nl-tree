@@ -13,7 +13,7 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <link href="bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" media="all"/>
     <link href="nl-tree.css" rel="stylesheet" type="text/css" media="all"/>
-    <script src="nl-tree.js?v=2"></script>
+    <script src="nl-tree.js?v=3"></script>
 </head>
 <body>
 <div ng-app="myApp" ng-controller="TreeDemoCtrl" class="nltree">
@@ -27,6 +27,7 @@
     <nl-tree data="treeData2" class="nltree" father-node-check="true" default-toggled="true" multi-select="true" max-level="10"></nl-tree>
     <h4><button ng-click="getCheckedList()">提取选中的行</button> </h4>
     {{checkedList}}
+    {{treeData2}}
 </div>
 <script>
     var app = angular.module('myApp', ["module.newland.tree"]);

@@ -1,6 +1,6 @@
 (function (angular) {
     var app = angular.module('module.newland.tree', []);
-    function $NLTree($NLTree) {
+    function $NLTree($NLTree, $injector) {
         return {
             restrict: 'EA',
             scope: {
@@ -10,44 +10,48 @@
                 selected: "&",
                 dataKey: "@",
                 nameKey: "@",
-                fatherNodeCheck: "@",
-                multiSelect: "@"
+                multiSelect: "@",
+                translateKey: "@"
             },
             controller: ["$scope", function ($scope) {
                 if (!$scope.nameKey) $scope.nameKey = 'name';
                 if (!$scope.dataKey) $scope.dataKey = 'data';
                 if (!$scope.multiSelect) $scope.multiSelect = $NLTree.defaultMultiSelect;
                 if (!$scope.fatherNodeCheck) $scope.fatherNodeCheck = false;
+                if ($scope.translateKey && !$injector.has("$translate")) {
+                    console.warn("The angular-translate module was not loaded, or the translate-key parameter was cancelled.");
+                }
                 $scope.select = function (row) {
                     if (row.active) {
-                        if ($scope.multiSelect) {
-                            recursiveActive(row, false);
-                        } else {
-                            row.active = false;
-                            $scope.selected({row: undefined});
-                            $scope.selectedRow = undefined;
-                        }
+                        row.active = false;
+                        $scope.selected({row: undefined});
+                        $scope.selectedRow = undefined;
                     } else {
                         if ($scope.selectedRow) $scope.selectedRow.active = false;
-                        if ($scope.multiSelect) {
-                            recursiveActive(row, true);
-                        } else {
-                            row.active = true;
-                            $scope.selected({'row': row});
-                            $scope.selectedRow = row;
-                        }
+                        row.active = true;
+                        $scope.selected({'row': row});
+                        $scope.selectedRow = row;
                     }
                 };
-                function recursiveActive(row, state) {
-                    row.active = state;
+                $scope.check = function (row) {
+                    // 0 没选中
+                    // 1 部分选中
+                    // 2 全选中
+                    row.checked = row.checked ? 0 : 2;
+                    recursiveChecked(row, row.checked);
+
+                    $NLTree.recursiveState($scope.data, $scope.dataKey);
+                };
+                function recursiveChecked(row, state) {
+                    row.checked = state;
                     var list = row[$scope.dataKey];
                     if (list) {
                         for (var i = 0; i < list.length; i++) {
                             var sonRow = list[i];
-                            recursiveActive(sonRow, state);
+                            recursiveChecked(sonRow, state);
                         }
                     }
-                }
+                };
                 $scope.changeToggled = function (row) {
                     row.toggled = !row.toggled;
                 };
@@ -68,10 +72,8 @@
                     "       ng-class=\"{'active':(row" + i + ".active), 'toggled': row" + i + ".toggled}\" " +
                     "       ng-init='initRowTOG(row" + i + ")'>" +
                     "       <i class='fa' ng-class=\"{'fa-plus-square-o': (row"+i+"[dataKey] && !row"+i+".toggled), 'fa-minus-square-o': (!row"+i+"[dataKey] || row"+i+".toggled)}\" ng-click='changeToggled(row"+i+")'></i>" +
-                    "       <i class='fa' ng-show='multiSelect && (fatherNodeCheck || (!fatherNodeCheck && !row" + i + "[dataKey]))'" +
-                    "           ng-class=\"{true: 'fa-square-o', false: 'fa-check-square-o'}[row" + i + ".active != true]\"" +
-                    "           ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'></i>" +
-                    "       <a href='javascript:;' ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'><span>{{row"+i+"[nameKey]}}</span></a>" +
+                    "       <i class='fa' ng-show='multiSelect' ng-class=\"{'fa-square-o': !row" + i + ".checked, 'fa-check-square-o': row" + i + ".checked==2, 'fa-check-square': row" + i + ".checked==1}\" ng-click='check(row"+i+")'></i>" +
+                    "       <a href='javascript:;' ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'><span>{{translateKey ? (row" + i + "[translateKey] | nlTreeTranslate) : row"+i+"[nameKey]}}</span></a>" +
                     "   </li>" +
                     "</ul>");
                 tar.append(ul);
@@ -79,25 +81,15 @@
             }
         }
     }
-    app.directive("nlTree", ["$NLTree", $NLTree]);
-    // app.filter("nlTreeChecked", function () {
-    //     return function (data) {
-    //         var state = -1;
-    //         for (var i = 0; i < data.length; i++) {
-    //             var row = data[i];
-    //             if (state == -1) {
-    //                 state = row.active ? 2 : 0;
-    //                 continue;
-    //             }
-    //             if (state == 0 && row.active) {
-    //                 state = 1;
-    //             } else if (state == 2 && !row.active) {
-    //                 state = 1;
-    //             }
-    //         }
-    //         return state;
-    //     }
-    // });
+    app.directive("nlTree", ["$NLTree", "$injector", $NLTree]);
+    app.filter("nlTreeTranslate", ["$NLTree", "$injector", function ($NLTree, $injector) {
+        var $translate = $injector.has("$translate") ? $injector.get("$translate") : undefined;
+        var fun = function (tag) {
+            return $translate ? $translate.instant(tag) : tag;
+        };
+        fun.$stateful = true;
+        return fun;
+    }]);
     app.provider("$NLTree", function treeProvider() {
         this.maxDepth = 10;
         this.defaultToggled = false;
@@ -112,7 +104,24 @@
                 target = target.concat(sonCheckedList);
             }
             return target;
-        }
+        };
+        this.recursiveState = function (list, dataKey) {
+            var result = 0;
+            for (var i = 0; i < list.length; i++) {
+                var row = list[i];
+                var state = row.checked;
+                if (row[dataKey]) {
+                    state = this.recursiveState(row[dataKey], dataKey);
+                    row.checked = state;
+                }
+                if (result == 0 && i == 0) {
+                    result = state ? state : 0;
+                } else if( (result == 0 && state == 2 && i > 0) || (result == 2 && !state) || (state == 1)) {
+                    result = 1;
+                }
+            }
+            return result;
+        };
         this.sortDataList = function(list, parentId, keyId, parentIdKey) {
             var targetList = [];
             for (var i = 0; i < list.length; i++) {
