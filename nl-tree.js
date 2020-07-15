@@ -58,16 +58,16 @@
                     }
                 };
                 $scope.changeToggled = function (row) {
-                    if (!row.toggled && $scope.loadNodes) {
-                        row.data = undefined;
-                        row.data = $scope.loadNodes({"row": row});
+                    console.log($scope.loadNodes);
+                    if (!row.toggled) {
+                        var data = $scope.loadNodes({"row": row});
+                        if (data) row.data = data;
                     }
                     row.toggled = !row.toggled;
                 };
-                var d = $scope.defaultToggled;
                 $scope.initRowTOG = function (row) {
                     if (row[$scope.dataKey]) {
-                        row.toggled = row.toggled == undefined ? (d == undefined ? $scope.config.defaultToggled : d) : row.toggled;
+                        row.toggled = row.toggled == undefined ? ($scope.defaultToggled == undefined ? $scope.config.defaultToggled : $scope.defaultToggled) : row.toggled;
                     } else {
                         row.toggled = false;
                     }
