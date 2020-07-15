@@ -6,7 +6,6 @@
             scope: {
                 data: "=",
                 defaultToggled: "=",
-                selectedRow: "@",
                 selected: "&",
                 loadNodes: "&",
                 dataKey: "@",
@@ -66,6 +65,10 @@
                     row.toggled = !row.toggled;
                 };
                 $scope.initRowTOG = function (row) {
+                    if (row.active) {
+                        if ($scope.selectedRow) $scope.selectedRow.active = false;
+                        $scope.selectedRow = row;
+                    }
                     if (row[$scope.dataKey]) {
                         row.toggled = row.toggled == undefined ? ($scope.defaultToggled == undefined ? $scope.config.defaultToggled : $scope.defaultToggled) : row.toggled;
                     } else {
