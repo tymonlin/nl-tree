@@ -6,7 +6,7 @@
  * dataKey: 子节点的数据 Key
  * nameKey: 显示字符串的 Key
  * translateKey: 是否加载i18n,以及对应的key（true/false)
- * multiSelect: 是否多选框（true/false)
+ * multiSelect: 是否多选框（true/false), 多选框默认选中时，要用 checked 字段进行预值
  * treeFlag: 是否显示树形结构（true/false)
  * setConfig： json对象设置，配置基本信息
  * {
@@ -94,7 +94,6 @@
                     }
                 };
                 $scope.changeToggled = function (row) {
-                    console.log(typeof $scope.showTree);
                     if (!$scope.showTree) return;
                     if (!row.toggled) {
                         var data = $scope.loadNodes({"row": row});
