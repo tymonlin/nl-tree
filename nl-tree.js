@@ -1,3 +1,21 @@
+/**
+ * data: 数据
+ * defaultToggled: 是否默认打开所有节点
+ * selected(row): 选中一个节点后的事件
+ * loadNodes(row): 动态加载子节点的事件
+ * dataKey: 子节点的数据 Key
+ * nameKey: 显示字符串的 Key
+ * translateKey: 是否加载i18n,以及对应的key（true/false)
+ * multiSelect: 是否多选框（true/false)
+ * treeFlag: 是否显示树形结构（true/false)
+ * setConfig： json对象设置，配置基本信息
+ * {
+ *      toggledOpenIcon: "fa fa-minus-square-o", 节点打开时的图标
+        toggledCloseIcon: "fa fa-plus-square-o",  节点关闭时的图标
+        defaultToggled: false,                  是否默认打开所有节点
+        defaultMultiSelect: false               是否多选框
+ * }
+ */
 (function (angular) {
     var app = angular.module('module.newland.tree', []);
     function $NLTree($NLTree, $injector) {
@@ -12,7 +30,8 @@
                 nameKey: "@",
                 multiSelect: "@",
                 translateKey: "@",
-                setConfig: "@"
+                setConfig: "@",
+                treeFlag: "@"
             },
             controller: ["$scope", function ($scope) {
                 $scope.config = angular.extend({}, $NLTree.defaultConfig);
@@ -21,12 +40,24 @@
                 }
                 if (!$scope.nameKey) $scope.nameKey = 'name';
                 if (!$scope.dataKey) $scope.dataKey = 'data';
-                if (!$scope.multiSelect) $scope.multiSelect = $scope.config.defaultMultiSelect;
+                if ($scope.multiSelect == undefined) {
+                    $scope.multiSelect = $scope.config.defaultMultiSelect;
+                } else if ($scope.multiSelect == 'true') {
+                    $scope.multiSelect = true;
+                } else {
+                    $scope.multiSelect = false;
+                }
                 if (!$scope.fatherNodeCheck) $scope.fatherNodeCheck = false;
+                if ($scope.treeFlag != undefined && $scope.treeFlag == 'false') {
+                    $scope.showTree = false;
+                } else {
+                    $scope.showTree = true;
+                }
                 if ($scope.translateKey && !$injector.has("$translate")) {
                     console.warn("The angular-translate module was not loaded, or the translate-key parameter was cancelled.");
                 }
                 $scope.select = function (row) {
+                    if ($scope.multiSelect) return;
                     if (row.active) {
                         row.active = false;
                         $scope.selected({row: undefined});
@@ -43,6 +74,7 @@
                     // 1 部分选中
                     // 2 全选中
                     row.checked = row.checked ? 0 : 2;
+                    if ($scope.treeFlag == false) return;
                     recursiveChecked(row, row.checked);
                     $NLTree.recursiveState($scope.data, $scope.dataKey);
                 };
@@ -57,7 +89,8 @@
                     }
                 };
                 $scope.changeToggled = function (row) {
-                    console.log($scope.loadNodes);
+                    console.log(typeof $scope.showTree);
+                    if (!$scope.showTree) return;
                     if (!row.toggled) {
                         var data = $scope.loadNodes({"row": row});
                         if (data) row.data = data;
@@ -87,7 +120,7 @@
                     "   <li ng-repeat='row" + i + " in " + (i == 0 ? "data" : "row" + (i-1) + "[dataKey]") +"' " +
                     "       ng-class=\"{'active':(row" + i + ".active), 'toggled': row" + i + ".toggled}\" " +
                     "       ng-init='initRowTOG(row" + i + ")'>" +
-                    "       <i ng-class=\"{true:config.toggledOpenIcon, false:config.toggledCloseIcon}[row"+i+".toggled == true]\" ng-click='changeToggled(row"+i+")'></i>" +
+                    "       <i ng-if='showTree' ng-class=\"{true:config.toggledOpenIcon, false:config.toggledCloseIcon}[row"+i+".toggled == true]\" ng-click='changeToggled(row"+i+")'></i>" +
                     "       <i ng-show='multiSelect' ng-class=\"{'fa fa-square-o': !row" + i + ".checked, 'fa fa-check-square-o': row" + i + ".checked==2, 'fa fa-check-square': row" + i + ".checked==1}\" ng-click='check(row"+i+")'></i>" +
                     "       <a href='javascript:;' ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'><span>{{translateKey ? (row" + i + "[translateKey] | nlTreeTranslate) : row"+i+"[nameKey]}}</span></a>" +
                     "   </li>" +
@@ -120,7 +153,7 @@
             for (var i = 0; i < list.length; i++) {
                 var row = list[i],sonCheckedList = [];
                 if (row[dataKey]) sonCheckedList = this.getCheckedList(row[dataKey], dataKey, hasFatherNode);
-                if ((!hasFatherNode && !row[dataKey] && row.active) || (hasFatherNode && row.active)) target.push(row);
+                if ((!hasFatherNode && !row[dataKey] && row.checked == 2) || (hasFatherNode && row.checked == 2)) target.push(row);
                 target = target.concat(sonCheckedList);
             }
             return target;

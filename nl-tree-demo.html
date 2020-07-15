@@ -13,27 +13,33 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <link href="bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" media="all"/>
     <link href="nl-tree.css?v=1" rel="stylesheet" type="text/css" media="all"/>
-    <script src="nl-tree.js?v=3"></script>
+    <script src="nl-tree.js?v=4"></script>
 </head>
 <body>
 <div ng-app="myApp" ng-controller="TreeDemoCtrl" class="nltree">
-    <h3>单选 树菜单</h3>
-    <nl-tree data="treeData" class="nltree" selected="selected(row)" max-level="10"></nl-tree>
+
+    <h3>1.普通多选目录</h3>
+    <nl-tree data="treeData" tree-flag="false" multi-select="true" class="nltree" selected="selectedMultiFolder(row)" max-level="10"></nl-tree>
+    <h4><button ng-click="checkedList2 = getCheckedList(treeData)">提取选中的行</button> </h4>
+    {{checkedList2}} <br/>
+
+    <hr />
+    <h3>2.单选 树菜单</h3>
+    <nl-tree data="treeData1" class="nltree" selected="selected(row)" max-level="10"></nl-tree>
     <h4>选中的行:</h4>
     {{row}}
 
     <hr />
-    <h3>单选 目录</h3>
-    <nl-tree data="folderData" class="nltree" load-nodes="loadNodes(row)" default-toggled="true" set-config="{{folderTreeConfig}}" selected="selectedFolder(folder)" max-level="50"></nl-tree>
+    <h3>3.单选 树目录</h3>
+    <nl-tree data="folderData" class="nltree" load-nodes="loadNodes(row)" default-toggled="true" set-config="{{folderTreeConfig}}" selected="selectedFolder(row)" max-level="50"></nl-tree>
     <h4>选中的目录:</h4>
     {{folder}}
 
     <hr />
-    <h3>多选</h3>
+    <h3>4.多选</h3>
     <nl-tree data="treeData2" class="nltree" father-node-check="true" default-toggled="true" multi-select="true" max-level="10"></nl-tree>
-    <h4><button ng-click="getCheckedList()">提取选中的行</button> </h4>
-    {{checkedList}}
-    {{treeData2}}
+    <h4><button ng-click="checkedList = getCheckedList(treeData2)">提取选中的行</button> </h4>
+    {{checkedList}} <br/>
 </div>
 <script>
     var app = angular.module('myApp', ["module.newland.tree"]);
@@ -44,8 +50,11 @@
         $scope.selectedFolder = function(folder) {
             $scope.folder = folder;
         };
-        $scope.getCheckedList = function () {
-            $scope.checkedList = $NLTree.getCheckedList($scope.treeData2, "data", true);
+        $scope.selectedMultiFolder = function(folder) {
+            $scope.multiFolder = folder;
+        };
+        $scope.getCheckedList = function (data) {
+            return $NLTree.getCheckedList(data, "data", false);
         };
         $scope.loadNodes = function (row) {
             return [
@@ -93,6 +102,31 @@
         ];
 
         $scope.treeData = [
+            {
+                "name": "第1行"
+            },
+            {
+                "name": "第2行",
+                "data": [
+                    {
+                        "name": "第2.1行"
+                    },
+                    {
+                        "name": "第2.2行"
+                    },
+                    {
+                        "name": "第2.3行",
+                        "data": [
+                            {
+                                "name": "第2.3.1行"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        $scope.treeData1 = [
             {
                 "name": "第1行"
             },
