@@ -57,7 +57,12 @@
                     console.warn("The angular-translate module was not loaded, or the translate-key parameter was cancelled.");
                 }
                 $scope.select = function (row) {
-                    if ($scope.multiSelect) return;
+                    if ($scope.multiSelect) {
+                        if ($scope.showTree == false) {
+                            $scope.check(row);
+                        }
+                        return;
+                    };
                     if (row.active) {
                         row.active = false;
                         $scope.selected({row: undefined});
