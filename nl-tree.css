@@ -39,5 +39,8 @@
 }
 .nltree ul li.active > a {
     background: rgba(95,158,160, 0.4);
+    border: 1px solid rgba(95,158,160, 0.8);
+    border-radius: 1px;
+    padding: 1px 2px;
     /*background-color: #cccccc;*/
 }

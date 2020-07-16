@@ -124,8 +124,9 @@
                     "   <li ng-repeat='row" + i + " in " + (i == 0 ? "data" : "row" + (i-1) + "[dataKey]") +"' " +
                     "       ng-class=\"{'active':(row" + i + ".active), 'toggled': row" + i + ".toggled}\" " +
                     "       ng-init='initRowTOG(row" + i + ")'>" +
-                    "       <i ng-if='showTree' ng-class=\"{true:config.toggledOpenIcon, false:config.toggledCloseIcon}[row"+i+".toggled == true]\" ng-click='changeToggled(row"+i+")'></i>" +
+                    "       <i ng-if='showTree && row" + i + ".treeNode!==false' ng-class=\"{true:config.toggledOpenIcon, false:config.toggledCloseIcon}[row"+i+".toggled == true]\" ng-click='changeToggled(row"+i+")'></i>" +
                     "       <i ng-show='multiSelect' ng-class=\"{'fa fa-square-o': !row" + i + ".checked, 'fa fa-check-square-o': row" + i + ".checked==2, 'fa fa-check-square': row" + i + ".checked==1}\" ng-click='check(row"+i+")'></i>" +
+                    "       <i ng-if='row"+i+".nodeIcon' class='{{row" + i + ".nodeIcon}}'></i>" +
                     "       <a href='javascript:;' ng-click='select(row"+i+")' ng-dblclick='changeToggled(row"+i+")'><span>{{translateKey ? (row" + i + "[translateKey] | nlTreeTranslate) : row"+i+"[nameKey]}}</span></a>" +
                     "   </li>" +
                     "</ul>");
